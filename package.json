@@ -2,10 +2,10 @@
   "name": "final-project-cmsc335",
   "version": "1.0.0",
   "description": "��#\u0000 \u0000c\u0000m\u0000s\u0000c\u00003\u00003\u00005\u0000-\u0000f\u0000i\u0000n\u0000a\u0000l\u0000-\u0000p\u0000r\u0000o\u0000j\u0000e\u0000c\u0000t\u0000\r\u0000 \u0000",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,10 @@
   },
   "homepage": "https://github.com/rbamzai21/cmsc335-final-project#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "mongoose": "^9.0.1"
   }
 }
