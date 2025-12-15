@@ -1,15 +1,17 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const router = express.Router();
+const mongoose = require("mongoose");
+const axios = require("axios");
 
 const eventSchema = new mongoose.Schema({
-  name: { type: String, required: true }, 
-  date: { type: Date, required: true}
-}, { timestamps: true });
+  title: String,
+  date: String,
+  location: String
+});
 
 const Event = mongoose.model("Event", eventSchema);
 
-router.get("/", async(req, res) => {
+router.get("/", (req, res) => {
   res.render("index");
 });
 
@@ -19,30 +21,90 @@ router.get("/new", (req, res) => {
 
 router.post("/new", async (req, res) => {
   try {
-    const { name, date } = req.body;
-    const newEvent = new Event({ name, date });
-    await newEvent.save();
-  } catch {
-    res.status(400).send(err.message);
+    const { title, date, location } = req.body;
+    await Event.create({ title, date, location });
+    res.redirect("/events");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Database error");
   }
 });
 
-router.get("/events", async(req, res) => {
+router.get("/events", async (req, res) => {
   try {
-    const events = await Event.find().sort({ date: 1 });
+    const events = await Event.find();
+    const now = Date.now();
+    const FIVE_DAYS = 5 * 24 * 60 * 60 * 1000;
+
+    for (let evt of events) {
+      const eventTime = new Date(evt.date).getTime();
+
+      if (eventTime - now > FIVE_DAYS) {
+        evt.weather = {
+          error: "Weather forecast unavailable (over 5 days away)"
+        };
+        continue;
+      }
+
+      try {
+        const forecastResponse = await axios.get(
+          "https://api.openweathermap.org/data/2.5/forecast",
+          {
+            params: {
+              q: evt.location.split(",")[0],
+              units: "imperial",
+              appid: process.env.WEATHER_API_KEY
+            }
+          }
+        );
+
+        let closestForecast = null;
+        let smallestDiff = Infinity;
+
+        for (let entry of forecastResponse.data.list) {
+          const diff = Math.abs(entry.dt * 1000 - eventTime);
+          if (diff < smallestDiff) {
+            smallestDiff = diff;
+            closestForecast = entry;
+          }
+        }
+
+        if (closestForecast) {
+          evt.weather = {
+            temp: closestForecast.main.temp,
+            description: closestForecast.weather[0].description,
+            date: closestForecast.dt_txt
+          };
+        } else {
+          evt.weather = {
+            error: "Weather forecast unavailable"
+          };
+        }
+      } catch {
+        evt.weather = {
+          error: "Weather forecast unavailable"
+        };
+      }
+    }
+
     res.render("events", { events });
   } catch (err) {
-    res.status(500).send(err.message);
+    console.error(err);
+    res.status(500).send("Error loading events");
   }
 });
 
 
-router.post("/clear", async (req, res) => {
-  res.render("clear");
+
+
+
+router.get("/clear", async (req, res) => {
   try {
-    await Event.deleteMany({});res
-  } catch {
-    res.status(500).send(err.message);
+    await Event.deleteMany({});
+    res.render("clear");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Database error");
   }
 });
 

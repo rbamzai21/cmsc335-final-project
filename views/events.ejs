@@ -2,12 +2,51 @@
 <html>
 <head>
     <title>All Events</title>
-    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <h1>All Events</h1>
+    <% if (events.length === 0) { %>
+        <p>No events have been added yet.</p>
+    <% } %>
 
-    <hr>
-    <a href="/"><button>Back to Home</button></a>
+    <% events.forEach(evt => { %>
+        <div class="event">
+            <p>
+                <strong>Title:</strong>
+                <%= evt.title %>
+            </p>
+            <p>
+                <strong>Date:</strong>
+                <%= evt.date %>
+            </p>
+            <p>
+                <strong>Location:</strong>
+                <%= evt.location %>
+            </p>
+            <% if (evt.weather && evt.weather.error) { %>
+                <p>
+                    <em><%= evt.weather.error %></em>
+                </p>
+            <% } %>
+            <% if (evt.weather && !evt.weather.error) { %>
+                <p>
+                    <strong>Forecast:</strong>
+                    <%= evt.weather.temp %>°F —
+                    <%= evt.weather.description %>
+                </p>
+                <p>
+                    <em>Closest forecast time: <%= evt.weather.date %></em>
+                </p>
+            <% } %>
+            <hr>
+        </div>
+    <% }) %>
+    <a href="/">
+        <button>Back to Home</button>
+    </a>
+    <a href="/clear">
+        <button>Clear All Events</button>
+    </a>
 </body>
 </html>
