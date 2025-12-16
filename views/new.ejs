@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Add Event</title>
+    <title>Add Event</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <h1>Add New Event</h1>
+    <h1>Add New Event</h1>
 
-  <form action="/new" method="POST">
-    <label>Event Name:</label><br>
-    <input type="text" name="title" required><br><br>
+    <form action="/new" method="POST">
+        <label>Event Name:</label><br>
+        <input type="text" name="title" required><br><br>
 
-    <label>Date:</label><br>
-    <input type="date" name="date" required><br><br>
+        <label>Date:</label><br>
+        <input type="date" name="date" required><br><br>
 
-    <label>Location:</label><br>
-    <input type="text" name="location" required><br><br>
+        <label>Location:</label><br>
+        <input type="text" name="location" required><br><br>
 
-    <button type="submit">Add Event</button>
-  </form>
+        <button type="submit">Add Event</button>
+    </form>
 
-  <br>
-  <a href="/">Back to Home</a>
+    <hr>
+        <div class="buttons">
+            <a href="/">
+            <button>Back to Home</button>
+        </a>
+    </div>
 </body>
 </html>
